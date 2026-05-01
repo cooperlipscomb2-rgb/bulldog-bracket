@@ -1,0 +1,11 @@
+{
+  "name": "bulldog-bracket",
+  "version": "1.0.0",
+  "description": "MSU Bulldog Bracket — settle it for good",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

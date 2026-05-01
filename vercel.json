@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    { "source": "/api/brackets/:id/votes", "destination": "/api/brackets/[id]?votes=true" },
+    { "source": "/api/brackets/:id", "destination": "/api/brackets/[id]" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/public/index.html" }
+  ],
+  "functions": {
+    "api/live.js": { "runtime": "edge" },
+    "api/brackets.js": { "maxDuration": 10 },
+    "api/brackets/[id].js": { "maxDuration": 10 }
+  }
+}
