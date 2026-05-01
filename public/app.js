@@ -34,35 +34,69 @@ function getBracketSize(n) { return n<=4?4:n<=8?8:16; }
 function buildBracket(contenders) {
   const size = getBracketSize(contenders.length);
   const slots = [...contenders];
+  // Distribute byes evenly — place nulls at the end so real matchups happen first
   while (slots.length < size) slots.push(null);
   const rounds = [];
   let cur = slots;
   while (cur.length > 1) {
     const matches = [];
-    for (let i=0; i<cur.length; i+=2) matches.push([cur[i], cur[i+1]]);
+    for (let i=0; i<cur.length; i+=2) {
+      const a = cur[i], b = cur[i+1];
+      matches.push([a, b]);
+    }
     rounds.push(matches);
     cur = new Array(matches.length).fill(null);
   }
   return rounds;
 }
 
+// When resolving matchups, a bye (null opponent) means auto-advance
+function resolveMatchups(picks, rounds) {
+  // Pre-fill picks for bye matchups so they auto-advance
+  const autoPicks = {...picks};
+  let teams = rounds[0].map(m=>[...m]);
+  for (let r=0; r<rounds.length; r++) {
+    for (let m=0; m<teams.length; m++) {
+      const a = teams[m][0], b = teams[m][1];
+      const key = `r${r}_${m}`;
+      // Auto-advance if one side is a bye
+      if (a && !b && !autoPicks[key]) autoPicks[key] = a;
+      if (b && !a && !autoPicks[key]) autoPicks[key] = b;
+    }
+    if (r+1<rounds.length) {
+      const next=[];
+      for (let m=0; m<teams.length; m+=2) next.push([autoPicks[`r${r}_${m}`]||null, autoPicks[`r${r}_${m+1}`]||null]);
+      teams=next;
+    }
+  }
+  return autoPicks;
+}
+
 function getMatchups(picks, rounds) {
+  const resolved = resolveMatchups(picks, rounds);
   const result = [];
   let teams = rounds[0].map(m=>[...m]);
   for (let r=0; r<rounds.length; r++) {
     for (let m=0; m<teams.length; m++) {
-      result.push({round:r, match:m, key:`r${r}_${m}`, a:teams[m][0], b:teams[m][1]});
+      const a = teams[m][0], b = teams[m][1];
+      const key = `r${r}_${m}`;
+      // Skip bye matchups (only one real contender) — they auto-advance
+      if ((a && !b) || (!a && b)) {
+        result.push({round:r, match:m, key, a, b, isBye:true});
+      } else {
+        result.push({round:r, match:m, key, a, b, isBye:false});
+      }
     }
     if (r+1<rounds.length) {
       const next=[];
-      for (let m=0; m<teams.length; m+=2) next.push([picks[`r${r}_${m}`]||null, picks[`r${r}_${m+1}`]||null]);
+      for (let m=0; m<teams.length; m+=2) next.push([resolved[`r${r}_${m}`]||null, resolved[`r${r}_${m+1}`]||null]);
       teams=next;
     }
   }
   return result;
 }
 
-function getChampion(picks, rounds) { return picks[`r${rounds.length-1}_0`]||null; }
+function getChampion(picks, rounds) { const resolved = resolveMatchups(picks, rounds); return resolved[`r${rounds.length-1}_0`]||null; }
 
 function getRoundName(r, total) {
   const f = total-1-r;
@@ -127,7 +161,7 @@ async function loadBrackets() {
 // ---- LIVE COUNTER (SSE) ----
 function initLiveCounter() {
   try {
-    const es = new EventSource('/api/live');
+    let sid = sessionStorage.getItem("bb-sid"); if (!sid) { sid = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem("bb-sid", sid); } const es = new EventSource(`/api/live?sid=${sid}`);
     es.onmessage = e => {
       const data = JSON.parse(e.data);
       document.getElementById('live-count').textContent = data.count;
@@ -237,7 +271,10 @@ function renderSetupContenders() {
   section.classList.remove('hidden');
   document.getElementById('contenders-count').textContent = n;
   const size = getBracketSize(n);
-  document.getElementById('size-hint').innerHTML = n>0 ? `${n} contenders → <span>${size}-slot bracket</span>${n<size?` (${size-n} bye${size-n>1?'s':''})`:''}` : '';
+  const byes = size - n;
+  let hintHtml = n>0 ? `${n} contenders → <span>${size}-slot bracket</span>` : '';
+  if (byes > 0) hintHtml += ` <span style='color:#f0c93a'>(+${byes} bye${byes>1?'s':''} added to fill bracket)</span>`;
+  document.getElementById('size-hint').innerHTML = hintHtml;
   const canLaunch = n>=4 && state.bracketName.trim().length>0;
   document.getElementById('launch-btn').disabled = !canLaunch;
   const list = document.getElementById('contenders-list');
@@ -312,8 +349,8 @@ function renderVote() {
   const rounds = state.bracketData;
   const matchups = getMatchups(state.picks, rounds);
   const champion = getChampion(state.picks, rounds);
-  const filled = matchups.filter(m=>state.picks[m.key]&&m.a&&m.b).length;
-  const total = matchups.filter(m=>m.a&&m.b).length;
+  const resolved = resolveMatchups(state.picks, rounds); const filled = matchups.filter(m=>resolved[m.key]&&m.a&&m.b).length;
+  const total = matchups.filter(m=>m.a&&m.b&&!m.isBye).length;
 
   const submitBtn = document.getElementById('submit-picks-btn');
   submitBtn.style.display = champion ? 'block' : 'none';
@@ -336,7 +373,7 @@ function renderGuided(matchups, rounds, champion, filled, total) {
     return;
   }
   let target=null;
-  for(const m of matchups){if(m.a&&m.b&&!state.picks[m.key]){target=m;break;}}
+  for(const m of matchups){if(m.a&&m.b&&!m.isBye&&!state.picks[m.key]){target=m;break;}}
   if(!target){el.innerHTML='<p style="color:var(--muted);text-align:center;padding:40px;">All caught up!</p>';return;}
   const pct = total>0 ? Math.round(filled/total*100) : 0;
   el.innerHTML = `<div class="matchup-screen">
