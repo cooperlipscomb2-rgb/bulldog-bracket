@@ -435,10 +435,10 @@ function renderContenders() {
   document.getElementById('contenders-count').textContent = n;
   const size = getBracketSize(n);
   const byes = size - n;
-  document.getElementById('size-hint').innerHTML = n > 0
-    ? `${n} contenders → <span style="color:var(--muted)">${size}-slot bracket</span>${byes > 0 ? ` <span style="color:var(--gold)">(+${byes} bye${byes>1?'s':\'\'})</span>` : ''}`
-    : '';
-
+  const byeNote = byes > 0 ? "<span style=\"color:var(--gold)\">(+" + byes + " bye" + (byes > 1 ? "s" : "") + ")</span>" : "";
+  document.getElementById("size-hint").innerHTML = n > 0
+    ? n + " contenders → <span style=\"color:var(--muted)\">" + size + "-slot bracket</span> " + byeNote
+    : "";
   // Show publish toggle only for admin
   document.getElementById('publish-wrap').classList.toggle('hidden', !isAdmin);
   updateLaunchBtn();
