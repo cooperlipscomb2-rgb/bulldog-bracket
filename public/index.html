@@ -7,191 +7,295 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --gold: #f0c93a; --maroon: #660000; --dark: #0d0f18; --surface: #13162a; --border: #1c2033; --text: #e2dfd6; --muted: #7a7d90; --dim: #383c55; }
+    :root { --gold: #f0c93a; --maroon: #660000; --dark: #0d0f18; --surface: #13162a; --border: #1c2033; --text: #e2dfd6; --muted: #7a7d90; --dim: #383c55; --green: #4ade80; --red: #e05252; }
     body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; }
-
-    /* HEADER */
-    .header { background: var(--maroon); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 100; }
-    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--gold); }
-    .logo span { color: white; }
-    .live-counter { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 14px; }
-    .live-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
-    .live-text { font-size: 13px; color: white; font-weight: 500; }
-    .live-count { font-size: 13px; color: #4ade80; font-weight: 700; }
-
-    /* SCREENS */
-    .screen { padding: 40px 28px; max-width: 760px; margin: 0 auto; }
     .hidden { display: none !important; }
 
-    /* SETUP */
-    .setup-hero { text-align: center; margin-bottom: 40px; }
-    .paw { font-size: 48px; margin-bottom: 8px; }
-    .setup-hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 2px; color: var(--gold); line-height: 1; margin-bottom: 8px; }
-    .setup-hero p { color: var(--muted); font-size: 15px; }
+    /* AUTH */
+    #auth-gate { position: fixed; inset: 0; background: var(--dark); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .auth-box { width: 100%; max-width: 420px; }
+    .auth-logo { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 4px; color: var(--gold); text-align: center; margin-bottom: 4px; }
+    .auth-logo span { color: white; }
+    .auth-sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 28px; letter-spacing: 1.5px; text-transform: uppercase; }
+    .auth-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; }
+    .auth-tabs { display: flex; background: var(--dark); border-radius: 8px; overflow: hidden; margin-bottom: 22px; }
+    .auth-tab { flex: 1; padding: 9px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; border-radius: 6px; }
+    .auth-tab.active { background: var(--gold); color: var(--dark); }
+    .field-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: block; }
+    .field { width: 100%; background: var(--dark); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; margin-bottom: 14px; transition: border-color 0.2s; }
+    .field:focus { border-color: var(--gold); }
+    .field::placeholder { color: var(--dim); }
+    .auth-domain-note { background: rgba(240,201,58,0.08); border: 1px solid rgba(240,201,58,0.2); border-radius: 6px; padding: 10px 12px; font-size: 12px; color: var(--gold); margin-bottom: 16px; line-height: 1.5; }
+    .auth-error { background: rgba(224,82,82,0.1); border: 1px solid rgba(224,82,82,0.3); border-radius: 6px; padding: 10px 12px; font-size: 13px; color: var(--red); margin-bottom: 14px; }
+    .auth-success { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); border-radius: 6px; padding: 10px 12px; font-size: 13px; color: var(--green); margin-bottom: 14px; }
 
-    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    /* HEADER */
+    .header { background: var(--maroon); padding: 0 24px; height: 58px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; color: var(--gold); cursor: pointer; }
+    .logo span { color: white; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .live-counter { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 5px 12px; }
+    .live-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+    .live-text { font-size: 12px; color: rgba(255,255,255,0.65); }
+    .live-count { font-size: 12px; color: var(--green); font-weight: 700; }
+    .user-name { font-size: 12px; color: rgba(255,255,255,0.75); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-badge { background: var(--gold); color: var(--dark); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+    .btn-signout { background: transparent; border: 1px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.65); border-radius: 6px; padding: 5px 11px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+    .btn-signout:hover { border-color: var(--gold); color: var(--gold); }
 
-    .bracket-name-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 28px; outline: none; transition: border-color 0.2s; }
-    .bracket-name-input:focus { border-color: var(--gold); }
-    .bracket-name-input::placeholder { color: var(--dim); }
+    /* NAV */
+    .nav { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .nav-btn { padding: 13px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.15s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .nav-btn:hover { color: var(--text); }
+    .nav-btn.active { color: var(--gold); border-bottom-color: var(--gold); font-weight: 600; }
 
-    .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 28px; }
-    .cat-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 10px; cursor: pointer; text-align: center; transition: all 0.15s; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; }
-    .cat-btn:hover { border-color: var(--gold); color: var(--gold); }
-    .cat-btn.active { background: rgba(240,201,58,0.12); border-color: var(--gold); color: var(--gold); }
-    .cat-icon { font-size: 24px; margin-bottom: 6px; display: block; }
-
-    .contenders-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
-    .contenders-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--muted); }
-    .contenders-count { background: var(--gold); color: var(--dark); font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 20px; }
-    .contender-item { display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--border); gap: 10px; }
-    .contender-num { font-size: 11px; color: var(--dim); font-weight: 600; width: 22px; text-align: right; }
-    .contender-input { flex: 1; background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; }
-    .contender-del { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 18px; padding: 2px 6px; border-radius: 4px; transition: color 0.15s; }
-    .contender-del:hover { color: #e05252; }
-    .add-contender { padding: 10px 16px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; background: none; border: none; width: 100%; font-family: 'DM Sans', sans-serif; border-top: 1px solid var(--border); transition: color 0.15s; }
-    .add-contender:hover { color: var(--gold); }
-
-    .custom-hint { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
-    .custom-hint strong { color: var(--gold); }
-
-    .info-msg { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--muted); margin-bottom: 20px; }
-    .action-bar { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; }
-    .size-hint { font-size: 12px; color: var(--dim); }
-    .size-hint span { color: var(--muted); }
+    /* LAYOUT */
+    .screen { padding: 32px 24px; max-width: 800px; margin: 0 auto; }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--gold); letter-spacing: 2px; margin-bottom: 4px; }
+    .page-sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 
     /* BUTTONS */
-    .btn-primary { background: var(--gold); color: var(--dark); border: none; border-radius: 8px; padding: 13px 28px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .btn-primary { background: var(--gold); color: var(--dark); border: none; border-radius: 8px; padding: 12px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
     .btn-primary:hover { background: #f9d76a; }
     .btn-primary:disabled { background: #2a2e45; color: var(--muted); cursor: default; }
-    .btn-outline { background: transparent; color: var(--text); border: 1px solid #2a2e45; border-radius: 8px; padding: 10px 18px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid #2a2e45; border-radius: 8px; padding: 10px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
     .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-    .btn-maroon { background: var(--maroon); color: white; border: none; border-radius: 8px; padding: 13px 28px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); transition: background 0.15s; }
+    .btn-maroon { background: var(--maroon); color: white; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 12px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
     .btn-maroon:hover { background: #880000; }
 
-    /* VOTE NAME */
-    .centered-screen { max-width: 460px; margin: 60px auto 0; text-align: center; }
-    .centered-screen h2 { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 2px; color: var(--gold); margin-bottom: 8px; }
-    .centered-screen p { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
-    .text-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); outline: none; transition: border-color 0.2s; }
-    .text-input:focus { border-color: var(--gold); }
-    .text-input::placeholder { color: var(--dim); }
+    /* BRACKET CARDS */
+    .bracket-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 16px; }
+    .bracket-card:hover { border-color: var(--gold); transform: translateY(-1px); }
+    .bracket-rank { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--dim); width: 36px; flex-shrink: 0; text-align: center; line-height: 1; }
+    .bracket-rank.gold { color: var(--gold); }
+    .bracket-rank.silver { color: #aaa; }
+    .bracket-rank.bronze { color: #cd7f32; }
+    .bracket-info { flex: 1; min-width: 0; }
+    .bracket-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text); letter-spacing: 1px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bracket-meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .hot-badge { background: rgba(255,100,0,0.15); border: 1px solid rgba(255,100,0,0.3); color: #ff6400; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+    .new-badge { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.25); color: var(--green); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+
+    /* FILTER ROW */
+    .filter-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+    .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .filter-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); font-weight: 700; }
+
+    /* SETUP */
+    .setup-hero { text-align: center; margin-bottom: 32px; }
+    .setup-hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 44px; letter-spacing: 2px; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+    .setup-hero p { color: var(--muted); font-size: 14px; }
+    .bracket-name-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 13px 16px; font-family: 'DM Sans', sans-serif; font-size: 19px; font-weight: 600; color: var(--text); margin-bottom: 24px; outline: none; transition: border-color 0.2s; }
+    .bracket-name-input:focus { border-color: var(--gold); }
+    .bracket-name-input::placeholder { color: var(--dim); }
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 9px; margin-bottom: 24px; }
+    .cat-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 13px 8px; cursor: pointer; text-align: center; transition: all 0.15s; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; }
+    .cat-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .cat-btn.active { background: rgba(240,201,58,0.12); border-color: var(--gold); color: var(--gold); }
+    .cat-icon { font-size: 22px; margin-bottom: 5px; display: block; }
+    .contenders-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 18px; }
+    .contenders-header { padding: 11px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted); }
+    .contenders-count { background: var(--gold); color: var(--dark); font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+    .contender-item { display: flex; align-items: center; padding: 9px 16px; border-bottom: 1px solid var(--border); gap: 10px; }
+    .contender-num { font-size: 11px; color: var(--dim); font-weight: 600; width: 20px; text-align: right; }
+    .contender-input { flex: 1; background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; }
+    .contender-del { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 17px; padding: 2px 5px; border-radius: 4px; transition: color 0.15s; }
+    .contender-del:hover { color: var(--red); }
+    .add-contender { padding: 9px 16px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; background: none; border: none; width: 100%; font-family: 'DM Sans', sans-serif; border-top: 1px solid var(--border); transition: color 0.15s; }
+    .add-contender:hover { color: var(--gold); }
+    .info-msg { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    .action-bar { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; gap: 10px; flex-wrap: wrap; }
+    .size-hint { font-size: 12px; color: var(--dim); }
+    .publish-row { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 14px; cursor: pointer; }
+    .publish-row span { font-size: 13px; color: var(--text); }
+    .toggle-sw { width: 34px; height: 19px; background: var(--dim); border-radius: 10px; position: relative; transition: background 0.2s; flex-shrink: 0; }
+    .toggle-sw.on { background: var(--gold); }
+    .toggle-sw::after { content:''; position:absolute; width:15px; height:15px; background:white; border-radius:50%; top:2px; left:2px; transition:left 0.2s; }
+    .toggle-sw.on::after { left:17px; }
 
     /* VOTE */
-    .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 28px; width: fit-content; }
-    .toggle-btn { padding: 8px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.15s; }
+    .centered-screen { max-width: 460px; margin: 48px auto 0; text-align: center; }
+    .text-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text); outline: none; transition: border-color 0.2s; }
+    .text-input:focus { border-color: var(--gold); }
+    .text-input::placeholder { color: var(--dim); }
+    .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 22px; width: fit-content; }
+    .toggle-btn { padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.15s; }
     .toggle-btn.active { background: var(--gold); color: var(--dark); font-weight: 700; }
-
-    .matchup-screen { max-width: 520px; margin: 0 auto; text-align: center; }
-    .round-badge { display: inline-block; background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 20px; }
-    .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .matchup-screen { max-width: 500px; margin: 0 auto; text-align: center; }
+    .round-badge { display: inline-block; background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 18px; }
+    .progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
     .progress-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
     .progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s ease; }
     .progress-text { font-size: 12px; color: var(--muted); white-space: nowrap; }
-    .matchup-cards { display: flex; gap: 16px; margin-bottom: 28px; }
-    .matchup-card { flex: 1; background: var(--surface); border: 2px solid var(--border); border-radius: 14px; padding: 32px 16px; cursor: pointer; transition: all 0.18s; font-size: 18px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 110px; text-align: center; line-height: 1.3; }
-    .matchup-card:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-3px); }
+    .matchup-cards { display: flex; gap: 12px; margin-bottom: 22px; }
+    .matchup-card { flex: 1; background: var(--surface); border: 2px solid var(--border); border-radius: 14px; padding: 28px 14px; cursor: pointer; transition: all 0.18s; font-size: 17px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: center; min-height: 100px; text-align: center; line-height: 1.3; }
+    .matchup-card:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
     .matchup-card.selected { border-color: var(--gold); background: rgba(240,201,58,0.1); color: var(--gold); }
-    .vs-divider { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--dim); display: flex; align-items: center; flex-shrink: 0; }
+    .vs-divider { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--dim); display: flex; align-items: center; flex-shrink: 0; }
 
     /* FULL BRACKET */
     .bracket-view { overflow-x: auto; padding-bottom: 12px; }
     .bracket-grid { display: flex; min-width: max-content; }
-    .bracket-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 170px; padding: 0 8px; }
-    .bracket-round-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); text-align: center; padding: 8px 0; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
-    .bracket-match { margin: 4px 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    .bracket-slot { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 12px; color: var(--text); cursor: pointer; transition: all 0.15s; min-height: 38px; display: flex; align-items: center; margin-bottom: 2px; }
-    .bracket-slot:hover:not(.empty) { border-color: var(--gold); color: var(--gold); }
+    .bracket-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 155px; padding: 0 7px; }
+    .bracket-round-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); text-align: center; padding: 7px 0; border-bottom: 1px solid var(--border); margin-bottom: 7px; }
+    .bracket-match { margin: 3px 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .bracket-slot { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 12px; color: var(--text); cursor: pointer; transition: all 0.15s; min-height: 34px; display: flex; align-items: center; margin-bottom: 2px; }
+    .bracket-slot:hover:not(.empty):not(.bye-slot) { border-color: var(--gold); color: var(--gold); }
     .bracket-slot.selected { border-color: var(--gold); background: rgba(240,201,58,0.1); color: var(--gold); font-weight: 600; }
     .bracket-slot.empty { background: var(--dark); border-style: dashed; color: var(--dim); cursor: default; }
+    .bracket-slot.bye-slot { color: var(--dim); font-style: italic; cursor: default; border-style: dashed; }
 
     /* CHAMPION */
-    .champion-card { background: rgba(240,201,58,0.08); border: 1px solid rgba(240,201,58,0.4); border-radius: 14px; padding: 28px; text-align: center; margin: 24px 0; }
-    .champion-label { font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-    .champion-name { font-family: 'Bebas Neue', sans-serif; font-size: 44px; color: var(--gold); letter-spacing: 2px; }
+    .champion-card { background: rgba(240,201,58,0.06); border: 1px solid rgba(240,201,58,0.3); border-radius: 14px; padding: 24px; text-align: center; margin: 18px 0; }
+    .champion-label { font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+    .champion-name { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--gold); letter-spacing: 2px; }
 
     /* RESULTS */
-    .results-header { margin-bottom: 8px; }
-    .results-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: var(--gold); letter-spacing: 2px; }
-    .results-tabs { display: flex; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; width: fit-content; margin: 20px 0; }
-    .results-tab { padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.15s; }
+    .results-tabs { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; width: fit-content; margin: 18px 0; }
+    .results-tab { padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--muted); transition: all 0.15s; }
     .results-tab.active { background: var(--gold); color: var(--dark); font-weight: 700; }
-    .voter-result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; }
-    .voter-result-name { font-weight: 600; font-size: 14px; margin-bottom: 10px; color: var(--gold); display: flex; align-items: center; justify-content: space-between; }
-    .voter-champ-badge { font-size: 11px; background: rgba(240,201,58,0.15); border: 1px solid rgba(240,201,58,0.3); color: var(--gold); padding: 2px 10px; border-radius: 20px; font-weight: 500; }
-    .mini-picks { display: flex; flex-wrap: wrap; gap: 6px; }
-    .mini-pick { background: var(--dark); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; font-size: 11px; color: var(--muted); }
-    .mini-pick.champ { border-color: rgba(240,201,58,0.4); color: var(--gold); }
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
-    .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--gold); letter-spacing: 1px; }
-    .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .bar-chart { margin-top: 8px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap: 10px; margin-bottom: 20px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+    .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--gold); }
+    .stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
     .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
     .bar-label { font-size: 13px; color: var(--text); min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bar-track { flex: 1; height: 24px; background: var(--dark); border-radius: 4px; overflow: hidden; }
-    .bar-fill { height: 100%; background: var(--gold); border-radius: 4px; transition: width 0.6s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
-    .bar-pct { font-size: 11px; font-weight: 700; color: var(--dark); }
+    .bar-track { flex: 1; height: 24px; background: var(--dark); border-radius: 5px; overflow: hidden; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg,var(--maroon),var(--gold)); border-radius: 5px; display: flex; align-items: center; justify-content: flex-end; padding-right: 7px; min-width: 28px; transition: width 0.5s ease; }
+    .bar-pct { font-size: 11px; font-weight: 700; color: white; }
+    .voter-result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; margin-bottom: 8px; }
+    .voter-result-name { font-weight: 600; font-size: 14px; color: var(--gold); display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .voter-champ-badge { font-size: 11px; background: rgba(240,201,58,0.1); border: 1px solid rgba(240,201,58,0.22); color: var(--gold); padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+    .mini-picks { display: flex; flex-wrap: wrap; gap: 5px; }
+    .mini-pick { background: var(--dark); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-size: 11px; color: var(--muted); }
+    .mini-pick.champ { border-color: rgba(240,201,58,0.3); color: var(--gold); }
 
-    /* BROWSE BRACKETS */
-    .bracket-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 12px; cursor: pointer; transition: all 0.15s; }
-    .bracket-card:hover { border-color: var(--gold); }
-    .bracket-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold); letter-spacing: 1px; margin-bottom: 6px; }
-    .bracket-card-meta { font-size: 12px; color: var(--muted); display: flex; gap: 16px; }
-    .bracket-card-meta span { display: flex; align-items: center; gap: 4px; }
+    /* GLOBAL RANKINGS */
+    .rankings-table { width: 100%; border-collapse: collapse; }
+    .rankings-table th { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .rankings-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
+    .rankings-table tr:last-child td { border-bottom: none; }
+    .rankings-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .rank-cell { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--dim); }
 
-    /* NAV */
-    .nav { display: flex; gap: 8px; margin-bottom: 0; }
-    .nav-btn { padding: 6px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: rgba(255,255,255,0.7); transition: color 0.15s; border-radius: 6px; }
-    .nav-btn:hover { color: white; background: rgba(255,255,255,0.1); }
-    .nav-btn.active { color: var(--gold); }
-
-    .tag { display: inline-block; background: rgba(240,201,58,0.15); color: var(--gold); border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; margin-left: 8px; }
-    .error-msg { background: #2a1515; border: 1px solid #5a2020; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #e05252; margin-bottom: 16px; }
-    .loading-msg { color: var(--muted); font-size: 14px; text-align: center; padding: 40px; }
+    .error-msg { background: rgba(224,82,82,0.1); border: 1px solid rgba(224,82,82,0.3); border-radius: 8px; padding: 11px 14px; font-size: 13px; color: var(--red); margin-bottom: 12px; }
+    .loading-msg { color: var(--muted); font-size: 14px; text-align: center; padding: 48px; }
+    .custom-hint { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+    .custom-hint strong { color: var(--gold); }
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
+    .empty-state .big { font-size: 40px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; line-height: 1.6; }
   </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">BULLDOG <span>BRACKET</span></div>
-  <div style="display:flex;align-items:center;gap:16px;">
-    <nav class="nav">
-      <button class="nav-btn active" onclick="showPage('home')">Home</button>
-      <button class="nav-btn" onclick="showPage('browse')">Browse</button>
-    </nav>
-    <div class="live-counter">
-      <div class="live-dot"></div>
-      <span class="live-text">Live:</span>
-      <span class="live-count" id="live-count">1</span>
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <div class="auth-box">
+    <div class="auth-logo">BULLDOG <span>BRACKET</span></div>
+    <div class="auth-sub">🐾 MSU Students Only 🐾</div>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+      </div>
+      <div id="auth-login-form">
+        <label class="field-label">MSU Email</label>
+        <input class="field" id="login-email" type="email" placeholder="yourname@msstate.edu">
+        <label class="field-label">Password</label>
+        <input class="field" id="login-password" type="password" placeholder="••••••••">
+        <div id="login-error" class="auth-error hidden"></div>
+        <button class="btn-primary" style="width:100%;" onclick="handleLogin()">Sign In →</button>
+      </div>
+      <div id="auth-signup-form" class="hidden">
+        <div class="auth-domain-note">🔒 Only @msstate.edu addresses allowed. You'll get a confirmation email.</div>
+        <label class="field-label">MSU Email</label>
+        <input class="field" id="signup-email" type="email" placeholder="yourname@msstate.edu">
+        <label class="field-label">Display Name</label>
+        <input class="field" id="signup-name" type="text" placeholder="First Last">
+        <label class="field-label">Password</label>
+        <input class="field" id="signup-password" type="password" placeholder="Min 6 characters">
+        <div id="signup-error" class="auth-error hidden"></div>
+        <div id="signup-success" class="auth-success hidden"></div>
+        <button class="btn-primary" style="width:100%;" onclick="handleSignup()">Create Account →</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- HOME PAGE -->
-<div id="page-home">
-
-  <!-- SETUP SCREEN -->
-  <div id="screen-setup" class="screen">
-    <div class="setup-hero">
-      <div class="paw">🐾</div>
-      <h1>BULLDOG BRACKET</h1>
-      <p>Create a bracket, share it with Bulldogs, settle it for good.</p>
+<!-- APP -->
+<div id="app" class="hidden">
+  <div class="header">
+    <div class="logo" onclick="showPage('trending')">BULLDOG <span>BRACKET</span></div>
+    <div class="header-right">
+      <div class="live-counter">
+        <div class="live-dot"></div>
+        <span class="live-text">Live:&nbsp;</span>
+        <span class="live-count" id="live-count">1</span>
+      </div>
+      <span class="user-name" id="header-user-name"></span>
+      <span class="admin-badge hidden" id="admin-badge">ADMIN</span>
+      <button class="btn-signout" onclick="handleSignout()">Sign Out</button>
     </div>
+  </div>
 
+  <nav class="nav">
+    <button class="nav-btn active" data-page="trending" onclick="showPage('trending')">🔥 Trending</button>
+    <button class="nav-btn" data-page="stats" onclick="showPage('stats')">📊 Rankings</button>
+    <button class="nav-btn" data-page="create" onclick="showPage('create')">+ Create</button>
+  </nav>
+
+  <!-- TRENDING -->
+  <div id="page-trending" class="screen">
+    <h1 class="page-title">TRENDING NOW</h1>
+    <p class="page-sub">What Bulldogs are voting on — ranked by heat 🔥</p>
+    <div class="filter-row" id="filter-row">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+      <button class="filter-btn" data-filter="fastfood" onclick="setFilter('fastfood')">🍔 Fast Food</button>
+      <button class="filter-btn" data-filter="movies" onclick="setFilter('movies')">🎬 Movies</button>
+      <button class="filter-btn" data-filter="nba" onclick="setFilter('nba')">🏀 NBA</button>
+      <button class="filter-btn" data-filter="games" onclick="setFilter('games')">🎮 Games</button>
+      <button class="filter-btn" data-filter="snacks" onclick="setFilter('snacks')">🍿 Snacks</button>
+      <button class="filter-btn" data-filter="sodas" onclick="setFilter('sodas')">🥤 Sodas</button>
+    </div>
+    <div id="trending-list"><div class="loading-msg">Loading...</div></div>
+  </div>
+
+  <!-- RANKINGS -->
+  <div id="page-stats" class="screen hidden">
+    <h1 class="page-title">BULLDOG RANKINGS</h1>
+    <p class="page-sub">Who wins when Bulldogs vote — aggregated across all brackets</p>
+    <div class="filter-row" id="stats-filter-row">
+      <button class="filter-btn active" data-sf="all" onclick="setStatsFilter('all')">All</button>
+      <button class="filter-btn" data-sf="fastfood" onclick="setStatsFilter('fastfood')">🍔 Fast Food</button>
+      <button class="filter-btn" data-sf="movies" onclick="setStatsFilter('movies')">🎬 Movies</button>
+      <button class="filter-btn" data-sf="nba" onclick="setStatsFilter('nba')">🏀 NBA</button>
+      <button class="filter-btn" data-sf="games" onclick="setStatsFilter('games')">🎮 Games</button>
+      <button class="filter-btn" data-sf="snacks" onclick="setStatsFilter('snacks')">🍿 Snacks</button>
+      <button class="filter-btn" data-sf="sodas" onclick="setStatsFilter('sodas')">🥤 Sodas</button>
+    </div>
+    <div id="stats-content"><div class="loading-msg">Loading rankings...</div></div>
+  </div>
+
+  <!-- CREATE -->
+  <div id="page-create" class="screen hidden">
+    <div class="setup-hero">
+      <div style="font-size:38px;margin-bottom:8px;">🐾</div>
+      <h1>BUILD A BRACKET</h1>
+      <p>Pick a category, customize contenders, and launch.</p>
+    </div>
     <div class="section-label">Bracket Title</div>
     <input class="bracket-name-input" id="bracket-name" placeholder="e.g. Best Fast Food of All Time">
-
-    <div class="section-label">Pick a Category</div>
+    <div class="section-label">Category</div>
     <div class="category-grid" id="cat-grid"></div>
-
     <div id="custom-hint" class="custom-hint hidden">
-      <strong>Custom bracket?</strong> Ask Claude in the chat — "give me 8 contenders for best pizza toppings" — then add them below.
+      <strong>Custom?</strong> Ask me — "give me 8 contenders for best Starkville restaurants" — then paste them below.
     </div>
-
     <div id="contenders-section" class="hidden">
-      <div class="info-msg" id="contenders-hint">✏️ Edit, remove, or add contenders — then launch.</div>
+      <div class="info-msg">✏️ Edit, remove, or add contenders — then launch.</div>
       <div class="contenders-box">
         <div class="contenders-header">
           <span>Contenders</span><span class="contenders-count" id="contenders-count">0</span>
@@ -201,32 +305,40 @@
       </div>
       <div class="action-bar">
         <div class="size-hint" id="size-hint"></div>
-        <button class="btn-primary" id="launch-btn" disabled>Launch Bracket →</button>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div id="publish-wrap" class="hidden">
+            <div class="publish-row" onclick="togglePublish()">
+              <div class="toggle-sw" id="publish-switch"></div>
+              <span>Publish to Trending</span>
+            </div>
+          </div>
+          <button class="btn-primary" id="launch-btn" disabled>Launch →</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- VOTE NAME SCREEN -->
-  <div id="screen-vote-name" class="screen hidden">
+  <!-- VOTE NAME -->
+  <div id="page-vote-name" class="screen hidden">
     <div class="centered-screen">
-      <div style="font-size:36px;margin-bottom:8px;">🐾</div>
-      <h2 id="vote-title">Bracket</h2>
-      <p>Enter your name so your picks are tracked with everyone else's.</p>
-      <input class="text-input" id="voter-name" placeholder="Your name..." style="text-align:center;font-size:16px;margin-bottom:16px;">
-      <div id="vote-error" class="error-msg hidden"></div>
-      <button class="btn-primary" id="start-vote-btn" style="width:100%;margin-top:12px;">Start Voting →</button>
-      <button class="btn-outline" style="width:100%;margin-top:10px;" onclick="goSetup()">← Back</button>
+      <div style="font-size:34px;margin-bottom:10px;">🐾</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;" id="vote-title"></div>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:22px;">Confirm your display name for this vote.</p>
+      <input class="text-input" id="voter-name" style="text-align:center;font-size:15px;margin-bottom:14px;" placeholder="Display name...">
+      <div id="vote-name-error" class="error-msg hidden"></div>
+      <button class="btn-primary" style="width:100%;margin-top:8px;" onclick="startVoting()">Start Voting →</button>
+      <button class="btn-outline" style="width:100%;margin-top:8px;" onclick="showPage('trending')">← Back</button>
     </div>
   </div>
 
-  <!-- VOTE SCREEN -->
-  <div id="screen-vote" class="screen hidden">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+  <!-- VOTE -->
+  <div id="page-vote" class="screen hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
       <div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:2px;">Voting as</div>
-        <div style="font-weight:600;color:var(--gold);" id="voting-as-name"></div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px;letter-spacing:1px;text-transform:uppercase;">Voting as</div>
+        <div style="font-weight:600;color:var(--gold);font-size:15px;" id="voting-as-name"></div>
       </div>
-      <button class="btn-primary" id="submit-picks-btn" style="display:none;">Submit Picks ✓</button>
+      <button class="btn-primary" id="submit-picks-btn" style="display:none;" onclick="submitPicks()">Submit Picks ✓</button>
     </div>
     <div class="view-toggle">
       <button class="toggle-btn active" onclick="setView('guided')">Guided</button>
@@ -236,12 +348,10 @@
     <div id="vote-full" class="hidden"></div>
   </div>
 
-  <!-- RESULTS SCREEN (single bracket) -->
-  <div id="screen-results" class="screen hidden">
-    <div class="results-header">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">Results</div>
-      <h2 id="results-title"></h2>
-    </div>
+  <!-- RESULTS -->
+  <div id="page-results" class="screen hidden">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">Results</div>
+    <h1 class="page-title" id="results-title"></h1>
     <div id="results-champion"></div>
     <div class="results-tabs">
       <button class="results-tab active" onclick="setResultsTab('overview')">Overview</button>
@@ -249,29 +359,15 @@
     </div>
     <div id="results-overview"></div>
     <div id="results-picks" class="hidden"></div>
-    <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn-outline" id="vote-again-btn">Vote Again</button>
-      <button class="btn-maroon" onclick="goSetup()">New Bracket</button>
-      <button class="btn-outline" onclick="showPage('browse')">Browse All Brackets</button>
+    <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-outline" onclick="voteAgain()">Vote Again</button>
+      <button class="btn-maroon" onclick="showPage('create')">New Bracket</button>
+      <button class="btn-outline" onclick="showPage('trending')">← Trending</button>
     </div>
-  </div>
-
-</div>
-
-<!-- BROWSE PAGE -->
-<div id="page-browse" class="hidden">
-  <div class="screen">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
-      <div>
-        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold);letter-spacing:2px;">ALL BRACKETS</h2>
-        <p style="color:var(--muted);font-size:14px;">Every bracket MSU Bulldogs have created</p>
-      </div>
-      <button class="btn-primary" onclick="showPage('home')">+ Create New</button>
-    </div>
-    <div id="browse-list"><div class="loading-msg">Loading brackets...</div></div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>

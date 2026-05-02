@@ -2,6 +2,7 @@
   "rewrites": [
     { "source": "/api/brackets/:id/votes", "destination": "/api/brackets/[id]" },
     { "source": "/api/brackets/:id", "destination": "/api/brackets/[id]" },
+    { "source": "/api/users/:id", "destination": "/api/users/[id]" },
     { "source": "/(.*)", "destination": "/public/index.html" }
   ]
 }
