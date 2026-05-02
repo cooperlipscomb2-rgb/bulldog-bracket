@@ -20,7 +20,7 @@ const PRESETS = {
 };
 
 // ── STATE ──
-let supabase = null;
+let sbClient = null;
 let currentUser = null;
 let isAdmin = false;
 let publishEnabled = false;
@@ -53,19 +53,19 @@ async function initSupabase() {
   try {
     const res = await fetch('/api/config');
     const cfg = await res.json();
-    supabase = window.supabase.createClient(cfg.url, cfg.anonKey);
+    sbClient = window.supabase.createClient(cfg.url, cfg.anonKey);
   } catch(e) {
     console.error('Could not load config', e);
     return;
   }
 
   // Check existing session
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sbClient.auth.getSession();
   if (session) {
     await onSignedIn(session.user);
   }
 
-  supabase.auth.onAuthStateChange(async (event, session) => {
+  sbClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) await onSignedIn(session.user);
     if (event === 'SIGNED_OUT') onSignedOut();
   });
@@ -119,7 +119,7 @@ async function handleLogin() {
     return;
   }
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await sbClient.auth.signInWithPassword({ email, password });
   if (error) {
     errEl.textContent = error.message;
     errEl.classList.remove('hidden');
@@ -143,7 +143,7 @@ async function handleSignup() {
   if (!name) { errEl.textContent = 'Please enter your name.'; errEl.classList.remove('hidden'); return; }
   if (password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.remove('hidden'); return; }
 
-  const { error } = await supabase.auth.signUp({
+  const { error } = await sbClient.auth.signUp({
     email, password,
     options: { data: { display_name: name } }
   });
@@ -158,7 +158,7 @@ async function handleSignup() {
 }
 
 async function handleSignout() {
-  await supabase.auth.signOut();
+  await sbClient.auth.signOut();
 }
 
 // ── LIVE COUNTER ──
@@ -409,7 +409,7 @@ document.getElementById('launch-btn').addEventListener('click', async () => {
   try {
     const res = await fetch('/api/brackets', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}` },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${(await sbClient.auth.getSession()).data.session?.access_token}` },
       body: JSON.stringify({
         title: bracketState.bracketName,
         category: bracketState.category,
@@ -639,7 +639,7 @@ function castPick(key, winner) {
 async function submitPicks() {
   const champion = getChampion(bracketState.picks, bracketState.bracketData);
   try {
-    const session = (await supabase.auth.getSession()).data.session;
+    const session = (await sbClient.auth.getSession()).data.session;
     await fetch(`/api/brackets/${bracketState.bracketId}/votes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
